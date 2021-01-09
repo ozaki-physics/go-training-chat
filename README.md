@@ -21,6 +21,15 @@ https://go-tour-jp.appspot.com/list
 本当なら feature/内容 ブランチを作って develop ブランチにマージして開発する。<br>
 面倒だから develop ブランチに直接コミットして 区切りが良いと main ブランチにマージする
 
+```
+$ docker-compose up -d
+$ docker-compose exec go_chat bash
+# cd src
+# go run main.go
+ctrl+c
+$ docker-compose down
+```
+
 ## 参考文献 References
 『Go言語によるWebアプリケーション開発』<br>
 原書名『Go Programming Blueprints』<br>
