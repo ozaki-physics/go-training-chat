@@ -5,3 +5,4 @@ https://qiita.com/propella/items/e49bccc88f3cc2407745
 https://qiita.com/usk81/items/8e192e68d6b18bec3b4a
 https://note.crohaco.net/2019/golang-package/
 https://teratail.com/questions/217859
+https://selfnote.work/20200622/programming/golang-error1/

@@ -15,3 +15,4 @@ services:
       # コンテナ側は相対パス書けない
     ports:
       - "127.0.0.1:8080:8080"
+    working_dir: "/go/src/github.com/ozaki-physics/go-training-chat"
