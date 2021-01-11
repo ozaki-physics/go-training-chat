@@ -1,0 +1,17 @@
+version: '3'
+services:
+  go_training_chat:
+    build:
+      context: .
+      dockerfile: Dockerfile_go
+    image: go1.15:training01
+    container_name: go_training
+    env_file:
+      .env/path.env
+      # go mod を使うために GOPATH を削除するために path を上書き
+    tty: true
+    volumes:
+      - ./go-mount-dir:/go
+      # コンテナ側は相対パス書けない
+    ports:
+      - "127.0.0.1:8080:8080"

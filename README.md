@@ -11,7 +11,16 @@ $ git clone git@github.com:ozaki-physics/go-training-chat.git
 ```
 
 ## 環境 Requirement
-Docker
+```bash
+$ docker-compose up -d
+$ docker-compose exec go_training_chat bash
+最初の1回目だけ
+root@hoge:/go# go mod init github.com/ozaki-physics/go-training-chat
+root@hoge:/go# 自由に使う
+$ docker-compose down
+```
+`go get`が保存されないから、毎回実行する必要がある
+`go.mod`に記述があれば大丈夫とかにならないかな
 
 ## 使い方 Usage
 1. 公式で基本構文を学習する<br>
@@ -20,15 +29,6 @@ https://go-tour-jp.appspot.com/list
 2. 書籍に取り組む<br>
 本当なら feature/内容 ブランチを作って develop ブランチにマージして開発する。<br>
 面倒だから develop ブランチに直接コミットして 区切りが良いと main ブランチにマージする
-
-```
-$ docker-compose up -d
-$ docker-compose exec go_chat bash
-# cd src
-# go run main.go
-ctrl+c
-$ docker-compose down
-```
 
 ## 参考文献 References
 『Go言語によるWebアプリケーション開発』<br>
