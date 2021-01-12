@@ -14,13 +14,10 @@ $ git clone git@github.com:ozaki-physics/go-training-chat.git
 ```bash
 $ docker-compose up -d
 $ docker-compose exec go_training_chat bash
-最初の1回目だけ
-root@hoge:/go/src/github.com/ozaki-physics/go-training-chat# go mod init github.com/ozaki-physics/go-training-chat
 root@hoge:/go/src/github.com/ozaki-physics/go-training-chat# 自由に使う
 $ docker-compose down
 ```
-`go get`が保存されないから、毎回実行する必要がある
-`go.mod`に記述があれば大丈夫とかにならないかな
+`go mod download`で依存ライブラリをダウンロードする
 
 ## 使い方 Usage
 1. 公式で基本構文を学習する<br>

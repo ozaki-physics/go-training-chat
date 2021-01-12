@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/ozaki-physics/go-training-chat/training"
-	"github.com/ozaki-physics/go-training-chat/chat_app"
+	"github.com/ozaki-physics/go-training-chat/pkg/training"
+	"github.com/ozaki-physics/go-training-chat/pkg/chat_app"
 	// "net/http"
 )
 

@@ -777,3 +777,11 @@ func (c *SafeCounter) Value(key string) int {
 	return c.v[key]
 }
 ```
+
+```go
+	// 動く
+	fmt.Println(training.Message)
+	// 動かない
+	fmt.Println(training.message)
+```
+なぜ?

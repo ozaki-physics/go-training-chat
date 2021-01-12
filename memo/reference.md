@@ -6,3 +6,5 @@ https://qiita.com/usk81/items/8e192e68d6b18bec3b4a
 https://note.crohaco.net/2019/golang-package/
 https://teratail.com/questions/217859
 https://selfnote.work/20200622/programming/golang-error1/
+https://qiita.com/sueken/items/87093e5941bfbc09bea8
+https://qiita.com/yagi_eng/items/65cd812107362d36ae86

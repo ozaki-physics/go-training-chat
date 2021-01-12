@@ -83,6 +83,8 @@ GOPATHを設定している場合は`go mod`が使えないらしい
 `$GOPATH/go.mod exists but should not`ってエラー言われた
 `export GOPATH=`で GOPATH を削除したら問題なく`go mod`としての`go get`を使えた
 
+`go mod download`で go.modファイル をもとに依存ライブラリをダウンロードする
+
 ## 雑多に調べたこと
 src はソースコード(source code)の略
 bin はバイナリ(binary)の略
@@ -91,9 +93,7 @@ bin はバイナリ(binary)の略
 godoc.org とは、様々なGo言語のライブラリのAPIドキュメントを生成するサービス
 
 ## 気になること
-どんなディレクトリ構成にするのがいい?
 Go 言語のパッケージ名などの命名規則は?
-
-Docker で Go を使うなら何をマウントするかを考えたい
-Dockerは環境だけ用意して、標準ライブラリはDockerの方で良いが、外部ライブラリはローカルの方に出したい
-コンパイルしたコードは Docker 側で良い
+Go 言語は、変数やメソッド名は キャメルケース(helloWorld) や パスカルケース(HelloWorld) を使うらしい
+ファイル名は スネークケース(hello_world) を使うらしい
+ハイフンで繋ぐとパッケージとしてソースコード内で使えなくなったりする
