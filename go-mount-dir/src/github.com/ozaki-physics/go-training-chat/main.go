@@ -11,6 +11,9 @@ func main() {
 	fmt.Println("hello")
 	fmt.Println(training.Message)
 	fmt.Println(chat_app.Message)
+	// 動かない
+	// fmt.Println(training.message)
+	// fmt.Println(chat_app.message)
 
 
 	// http.Handle("/", http.FileServer(http.Dir("web")))
