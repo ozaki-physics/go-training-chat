@@ -1,3 +1,9 @@
 FROM golang:1.15
 
+ARG REPOSITORY
+
+ENV GOPATH=""
+WORKDIR /go/src/$REPOSITORY
+RUN go mod init $REPOSITORY
+
 CMD ["bash"]
