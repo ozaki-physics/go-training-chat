@@ -18,6 +18,9 @@ func main() {
 	b := 3
 	fmt.Println(b)
 
+	var c = 4
+	fmt.Println(c)
+
 	var z complex128 = cmplx.Sqrt(-5 + 12i)
 	fmt.Println(z)
 	// 2+3i が出力される
