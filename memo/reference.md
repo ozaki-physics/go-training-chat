@@ -8,3 +8,4 @@ https://teratail.com/questions/217859
 https://selfnote.work/20200622/programming/golang-error1/
 https://qiita.com/sueken/items/87093e5941bfbc09bea8
 https://qiita.com/yagi_eng/items/65cd812107362d36ae86
+https://qiita.com/taji-taji/items/77845ef744da7c88a6fe
