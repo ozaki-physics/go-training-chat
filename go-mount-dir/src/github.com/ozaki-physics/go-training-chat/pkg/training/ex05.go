@@ -5,7 +5,6 @@ import (
 	"math/cmplx"
 )
 
-
 func main() {
 	var a int
 	fmt.Println(a)
@@ -26,7 +25,7 @@ func main() {
 	// 2+3i が出力される
 
 	var (
-		ToBe bool = false
+		ToBe   bool   = false
 		MaxInt uint64 = 1<<64 - 1
 	)
 	fmt.Println(ToBe, MaxInt)
