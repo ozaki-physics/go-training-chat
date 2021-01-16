@@ -12,7 +12,7 @@ func main() {
 	fmt.Println(sum)
 
 	var sum02 = 1
-	for ; sum02 < 10; {
+	for sum02 < 10 {
 		sum02++
 	}
 	fmt.Println(sum02)
