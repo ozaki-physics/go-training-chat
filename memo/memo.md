@@ -925,9 +925,9 @@ func main() {
 ```
 nil レシーバ
 インタフェースの実体?(インタフェースを見かけ上の型だから 実装元の型のこと笑)が nil ならメソッドは nil をレシーバーとして呼び出される
-値が`<nil>`的な。nil インターフェースの値は、値も具体的な型も持たない。
+値が`<nil>`的な。nil インタフェースの値は、値も具体的な型も持たない。
 フツーの言語だと nil を参照しただけでエラーになるけど Go はならない
-nil インターフェースのメソッドを呼び出すと Go ではランタイムエラーになる
+nil インタフェースのメソッドを呼び出すと Go ではランタイムエラーになる
 nil を適切に処理するメソッドを書くのが一般的
 ```go:ex24.go
 func (t *T) M() {
@@ -939,8 +939,8 @@ func (t *T) M() {
 	fmt.Println(t.S)
 }
 ```
-ゼロ個のメソッドを指定されたインターフェース型は、 空のインターフェース という。`interface{}`
-空のインターフェースは、任意の型の値を保持できる
+ゼロ個のメソッドを指定されたインタフェース型は、 空のインタフェース という。`interface{}`
+空のインタフェースは、任意の型の値を保持できる
 ```go
 func output(i interface{}) {
 	fmt.Printf("値: %v, 型: %T\n", i, i)
@@ -961,80 +961,208 @@ func main() {
 }
 ```
 ### 型アサーション
+アサーション とは 表明 のこと。プログラムの前提条件を示すのに使う。
+型アサーション を使うと インタフェースの実体の型がなにか明らかにすることができる
+空のインタフェースは 任意の型を保持できるが実際に使うときに動的にチェックしないといけないから
+単純に型チェックなど デバッグでも使いそう。
+型アサーション は インタフェースの値の素になる具体的な値を利用する手段を提供する
+アサーションは、コードのその箇所で必ず真であるべき式の形式をとる
 
-
-型アサーション は、インターフェースの値の基になる具体的な値を利用する手段を提供する
-アサーションとは、表明のこと。プログラムの前提条件を示すのに使う。
-表明は、プログラムのその箇所で必ず真であるべき式の形式をとる
-デバッグで使いそう。テストコードとはまた違うテストだな。てか単純に型チェックだわ。
 `t := i.(T)`
-インターフェースの値 i が具体的な型 T を保持し、基になる T の値を変数 t に代入する
+インタフェースの値 i が具体的な型 T を保持し、基になる T の値を変数 t に代入する
+ただ i が T を持っていないとき`panic`というエラーになる
+
+型を保持しているか確認するために 戻り値を2個受け取ることができる
 `t, ok := i.(T)`
-i が T を保持していれば、 t は基になる値になり、 ok は真(true)
-1個しか値を返さないかと思えば、真偽値もちゃんと返すのね。
+i が T を保持していれば t は基になる値になり ok は true になる
+i が T を保持していなければ t は T のゼロ値 ok は false になる
+ok を受け取る書き方だと panic は起こらない
+```go:ex26.go
+func main() {
+	// 実体は string 型の 任意の型を保持できる空インタフェースを宣言
+	var i interface{} = "hello"
+	
+	// 型アサーション
+	s, ok := i.(string)
+	fmt.Println(s, ok)
+	// 出力 hello true
+
+	// 型アサーション
+	f, ok := i.(float64)
+	fmt.Println(f, ok)
+	// 出力 0 false 実体は string だから
+}
+```
+
 型switch はいくつかの型アサーションを直列に使用できる構造
 型switchは通常のswitch文と似ている。
 型switchのcaseは型を指定し、その値は指定されたインターフェースの値が保持する値の型と比較する
 型switchを使うとき、型アサーションの部分をtypeにする
-```
+```go:ex26.go
 func do(i interface{}) {
+	// i.(type) でとりあえず実体の型を受け取って case で判定する
 	switch v := i.(type) {
 	case int:
-		fmt.Printf("Twice %v is %v\n", v, v*2)
+		fmt.Printf("型: %T, 値: %v, 2乗: %v\n", v, v, v*2)
 	case string:
-		fmt.Printf("%q is %v bytes long\n", v, len(v))
+		fmt.Printf("型: %T, 値: %v, %q is %v bytes long\n", v, v, v, len(v))
 	default:
-		fmt.Printf("I don't know about type %T!\n", v)
+		fmt.Printf("%T型なんて知らん!\n", v)
 	}
+}
+func main() {
+	do(3)
+	// 出力 型: int, 値: 3, 2乗: 6
+	do("hello")
+	// 出力 型: string, 値: hello, "hello" is 5 bytes long
+	do(true)
+	// 出力 bool型なんて知らん!
 }
 ```
 
-もっともよく使われているinterfaceの一つに fmt パッケージ に定義されている Stringer がある。
-JavaでいうtoStringメソッドな感じ?その型をprintlnした時のデフォルト表記的な。
-```
+インタフェースの例
+もっともよく使われている interface の1つに fmt パッケージ に定義されている Stringer がある。
+JavaでいうtoStringメソッドな感じ? その型を println した時のデフォルト表記的な。
+```go
 type Stringer interface {
     String() string
 }
 ```
-```
+`String()`の実装練習
+```go:ex27.go
+type IPAddr [4]byte
+
 func (i IPAddr) String() string {
 	return fmt.Sprintf("%v.%v.%v.%v", i[0], i[1], i[2], i[3])
 }
-```
 
-Goのプログラムは、エラーの状態を error 値で表す。
-error 型は fmt.Stringer に似た組み込みのインタフェース
-Goでは，関数が多値を返せることを利用して，内部で発生したエラーを戻り値で表現します。
+func main() {
+	hosts := map[string]IPAddr{
+		"loopback":  {127, 0, 0, 1},
+		"googleDNS": {8, 8, 8, 8},
+	}
+
+	for name, ip := range hosts {
+		// 本来なら loopback: [127 0 0 1] とただの配列として出力される
+		fmt.Printf("%v: %v\n", name, ip)
+		// String() を IPAddr 型に実装したことで
+		// loopback: 127.0.0.1 と出力されるようになった
+	}
+}
 ```
+### 戻り値としてのエラー
+Go のプログラムは エラーの状態を error 値で表す。
+error 型は fmt.Stringer に似た組み込みのインタフェース
+Goでは 関数が複数の値値を返せることを利用して 内部で発生したエラーを戻り値で表現する
+この値を使ってエラーハンドリングする
+```go
 type error interface {
     Error() string
 }
 ```
-```
+error が nil なら成功
+error が nilでない(何かしらエラーメッセージを呼び出し元に返した場合)は失敗
+関数の処理に成功した場合 エラーは nil 異常があった場合 エラーだけに値が入り他方はゼロ値になる
+```go:ex28.go
+type MyError struct {
+	When time.Time
+	What string
+}
+
+func (e *MyError) Error() string {
+	return fmt.Sprintf("いつ: %v, 何が: %s", e.When, e.What)
+}
+
+func run() error {
+	return &MyError{
+		time.Now(),
+		"実行できません",
+	}
+}
+
 func main() {
+	// err が nil じゃない つまり エラーが起こっている
 	if err := run(); err != nil {
 		fmt.Println(err)
+		// 出力 いつ: 2021-01-16 00:01:35.7540284 +0000 UTC m=+0.000046701, 何が: 実行できません
 	}
 }
 ```
-error がnilなら成功したことを示し、 error が nilでない(何かしらエラーメッセージを呼び出し元に返した場合)は失敗したことを示す。
-関数の処理に成功した場合はエラーはnilにし，異常があった場合はエラーだけに値が入り，他方はゼロ値
 
 ### io パッケージ
-io パッケージは、データストリームを読むことを表現する io.Reader インタフェースを規定している。
-io.Reader インタフェースは Read メソッドを持つ`func (T) Read(b []byte) (n int, err error)`
-よくあるパターンは、別の io.Reader をラップし、ストリームの内容を何らかの方法で変換するio.Reader
-例えば、 gzip.NewReader は、 io.Reader (gzipされたデータストリーム)を引数で受け取り、 *gzip.Reader を返します。
-その *gzip.Reader は、 io.Reader (展開したデータストリーム)を実装している
+io パッケージは データストリームを読むことを表現する io.Reader インタフェースを規定している。
+Go の標準ライブラリには ファイル, ネットワーク接続, 圧縮, 暗号化 などで このインタフェースが実装されていることが多い。
+io.Reader インタフェースは Read メソッドを持つ
+`func (T) Read(b []byte) (n int, err error)`
+Read は データを与えられたバイトのスライスに入れ 入れたバイトのサイズとエラーの値を返す。
+ストリームの終端は io.EOF というエラーを返す。
+```go:ex29.go
+import (
+	"fmt"
+	"io"
+	"strings"
+)
 
-image パッケージは、以下の Image インタフェースを定義している
+func main() {
+	r := strings.NewReader("Hello, Reader!")
+
+	// ゼロ値が8個のバイト型の配列
+	b := make([]byte, 8)
+	fmt.Println(b, len(b), cap(b))
+	// 出力 [0 0 0 0 0 0 0 0] 8 8
+	for {
+		// 8個のバイトごとに取り出す感じ
+		n, err := r.Read(b)
+		fmt.Printf("n: %v, err: %v\n", n, err,)
+		fmt.Printf("b[:n]: %q\n", b[:n])
+		if err == io.EOF {
+			break
+		}
+	}
+	// 出力
+	// n: 8, err: <nil>
+	// b[:n]: "Hello, R"
+	// n: 6, err: <nil>
+	// b[:n]: "eader!"
+	// n: 0, err: EOF
+	// b[:n]: ""
+}
 ```
+よくあるパターンは io.Reader をラップし ストリームの内容を何らかの方法で変換する io.Reader を作る
+例えば gzip.NewReader は io.Reader (gzipされたデータストリーム)を引数で受け取り、 *gzip.Reader を返。
+その *gzip.Reader は io.Reader (展開したデータストリーム)を実装している
+### image パッケージ
+image パッケージは、以下の Image インタフェースを定義している
+```go
 package image
 
 type Image interface {
-    ColorModel() color.Model
-    Bounds() Rectangle
-    At(x, y int) color.Color
+	ColorModel() color.Model
+	Bounds() Rectangle
+	At(x, y int) color.Color
+}
+```
+image.Rect(0, 0, width, height) のようにして image.Rectangle を返す
+ColorModel は color.RGBAModel を返す
+At は、ひとつの色を返す
+
+color.Model は定義済みの color.RGBAModel で代用できる
+color.Color は定義済みの color.RGBA で代用できる
+代用することで color.Color と color.Model の2個のインタフェースを無視できる
+```go
+package main
+
+import (
+	"fmt"
+	"image"
+)
+
+func main() {
+	m := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	fmt.Println(m.Bounds())
+	// 出力 (0,0)-(100,100)
+	fmt.Println(m.At(0, 0).RGBA())
+	// 出力 0 0 0 0
 }
 ```
 ### goroutine(ゴルーチン, Goルーチン)
