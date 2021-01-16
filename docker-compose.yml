@@ -3,7 +3,7 @@ services:
   go_training_chat:
     build:
       context: .
-      dockerfile: Dockerfile_go
+      dockerfile: Dockerfile
       args:
         - REPOSITORY=github.com/ozaki-physics/go-training-chat
         # パッケージを作成(一意で慣例のリポジトリの書き方)

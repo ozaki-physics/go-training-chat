@@ -1,4 +1,4 @@
-package chat_app
+package chat
 
 var Message string = "hello world!!"
 var message string = "hello world!!!"
