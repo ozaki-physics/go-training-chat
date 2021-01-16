@@ -1165,40 +1165,86 @@ func main() {
 	// 出力 0 0 0 0
 }
 ```
-### goroutine(ゴルーチン, Goルーチン)
-goroutine (ゴルーチン)は、Goのランタイムに管理される軽量なスレッド
+### goroutine(ゴルーティン, Goルーティン)
+goroutine (ゴルーティン)は Goのランタイムに管理される軽量なスレッド
+
 `go f(x, y, z)`と書けば、新しいgoroutineが実行する
-f , x , y , z の評価自体は、実行元(current)のgoroutineで実行され、 fメソッド の実行は、新しいgoroutineで実行する
-チャネル( Channel )型は、チャネルオペレータの `<-` を用いて値の送受信ができる通り道
-(データは、矢印の方向に流れる。
-```
+f , x , y , z の評価自体は 実行元(カレント:current)の goroutine で実行される
+fメソッド の実行は 新しい goroutine で実行する
+goroutine は 同じアドレス空間で実行されるため 共有メモリへのアクセスは必ず同期する必要がある
+
+チャネル(Channel)型は チャネルオペレータの`<-`を用いて値の送受信ができる通り道
+(データは 矢印の方向に流れる)
+```go
 ch <- v    // v をチャネル ch へ送信する
 v := <-ch  // ch から受信した変数を v へ割り当てる
 ```
-マップとスライスと同様に、チャネルは使う前に生成する必要がある。`ch := make(chan int)`
-チャネルは、 バッファ ( buffer )として使える
-バッファを持つチャネルを初期化するには、 make の２つ目の引数にバッファの長さを与える
-`ch := make(chan int, 100)`
-バッファが詰まった時は、チャネルへの送信をブロックする
- バッファが空の時には、チャネルの受信(チャネルから変数へ送りきる)をブロック
+基本は片方が準備できるまで送受信はブロックされる
+つまり 明確なロックや条件変数がなくても goroutine の同期が簡単にできる
+
+チャネルを使うときは マップとスライスと同様に 使う前に生成する必要がある。
+`ch := make(chan int)`
+```go:ex30.go
+// int配列 を受け取るのと 返す先のチャネルを指定されて 指定されたチャネルへ合計値を返す
+func sum(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	c <- sum // send sum to c
+}
+
+func main() {
+	s := []int{7, 2, 8, -9, 4, 0}
+
+	// c というチャネルを作成する
+	c := make(chan int)
+	// int配列を2等分して c チャネルへ送る
+	go sum(s[:len(s)/2], c)
+	go sum(s[len(s)/2:], c)
+	// c チャネルから受け取る
+	x, y := <-c, <-c // receive from c
+	// 受け取った値を出力する
+	fmt.Println(x, y, x+y)
+	// 出力 -5 17 12
+}
 ```
+
+チャネルは バッファ(buffer)としても使える
+バッファを持つチャネルを初期化するには make の２つ目の引数にバッファの長さを与える
+`ch := make(chan int, 100)`
+バッファが詰まった時は チャネルへの送信をブロックする
+バッファが空の時には チャネルの受信(チャネルから変数へ送りきる)をブロック
+```go:ex31.go
 func main() {
 	ch := make(chan int, 3)
 	ch <- 1
 	ch <- 2
 	ch <- 3
 	fmt.Println(<-ch)
+	// 先に ch から受け取ってからじゃないとエラーになる
+	ch <- 4
+	fmt.Println(<-ch)
 	fmt.Println(<-ch)
 	fmt.Println(<-ch)
 }
 ```
-送り手は、これ以上の送信する値がない場合の状態を、チャネルを close するという。
+実は、ループの`for i := range c`は チャネルが閉じられるまでチャネルから値を繰り返し受信し続けるという処理をしていた
+
+送り手は これ以上の送信する値がないことを伝えるために チャネルを close できる
+close されているかは チャネルから2個目の戻り値を設定して ok が false かで確かめる
 `v, ok := <-ch`
-受信する値がない、かつ、チャネルが閉じているなら、 ok の変数は、 false
-実は、ループの for i := range c は、チャネルが閉じられるまで、チャネルから値を繰り返し受信し続けていた
-チャネルは、通常closeする必要はない。closeするのは、これ以上値が来ないことを受け手が知る必要があるときにだけ
-```
-フィボナッチ数列
+受信する値がない かつ チャネルが閉じているなら ok は false
+チャネルは 通常 close する必要はない
+close するのは これ以上値が来ないことを受け手が知る必要があるときにだけ
+例えば range ループの終了など
+
+close するなら送り手のチャネルだけを close する
+もし close したチャネルへ送信すると panic を起こす
+
+```go:ex32.go
+// チャネルを使った自作フィボナッチ数列
+// close の扱いが微妙な気がする
 func fibonacci(n int, c chan int) {
 	x, y := 0, 1
 	for i := 0; i < n; i++ {
@@ -1216,15 +1262,22 @@ func main() {
 }
 ```
 ### select ステートメント
-select ステートメントは、複数の通信操作のことで、goroutineを待たせる。つまり、複数のチャネルで受信を待てる。
-```
+select ステートメントは 複数の通信操作のこと
+goroutine を待機させることができる。
+つまり 複数のチャネルで受信を待機させることができる
+select は複数ある case のどれかが準備できるようになるまでブロックする
+準備ができた case を実行する
+もし複数の case の準備ができているなら case はランダムに選択される
+どの case も準備ができていないのであれば select の中の default が実行される
+```go:ex33.go
 func fibonacci(c, quit chan int) {
 	x, y := 0, 1
 	for {
+		// どれかの case が実行できるようになるまで goroutine スレッドを待機させる
 		select {
-		case c <- x:
+		case c <- x: // x を c チャネルに送信したら実行する
 			x, y = y, x+y
-		case <-quit:
+		case <-quit: // quit チャネルを値を受け取ったら実行する
 			fmt.Println("quit")
 			return
 		}
@@ -1232,30 +1285,39 @@ func fibonacci(c, quit chan int) {
 }
 
 func main() {
+	// 2個のチャネルを生成
 	c := make(chan int)
 	quit := make(chan int)
+	// for文中は c チャネルに値を渡して 終わったら quit チャネルに値を渡す という goroutine スレッドを作る
 	go func() {
 		for i := 0; i < 4; i++ {
 			fmt.Println(<-c)
 		}
 		quit <- 0
 	}()
-	fibonacci(c, quit)
-}
 
+	fibonacci(c, quit)
+	// 出力
+	// 0
+	// 1
+	// 1
+	// 2
+	// quit
+}
 ```
-一番最後の`fibonacci(c, quit)`が起動しつつも、別スレッドでfor文が回っていて、チャネルcに値が届いてたら、`fmt.Println(<-c)`をするのかな
-どの case も準備ができていないのであれば、 select の中の default が実行される
-```
+一番最後の`fibonacci(c, quit)`が起動しつつも 別スレッドでfor文が回っていて チャネル c で値を受け取っていたら`fmt.Println(<-c)`をする感じ
+
+```go:ex34.go
+// 自作で select の default を実験した
 func main() {
 	tick := time.Tick(100 * time.Millisecond)
 	boom := time.After(500 * time.Millisecond)
 	for {
 		select {
 		case <-tick:
-			fmt.Println("tick.")
+			fmt.Println("チック.")
 		case <-boom:
-			fmt.Println("BOOM!")
+			fmt.Println("ボーン!")
 			return
 		default:
 			fmt.Println("    .")
@@ -1264,24 +1326,59 @@ func main() {
 	}
 }
 ```
-通信が必要ない。つまりコンフリクトを避けたい。つまり。一度に1つのgoroutineだけが変数にアクセスできるようにしたい場合は、
-排他制御( mutual exclusion )と呼ばれ、このデータ構造を指す一般的な名前は mutex (ミューテックス)です。
-Goの標準ライブラリは、排他制御をsync.Mutexと次の二つのメソッド(Lock, Unlock)で提供する。
-Lock と Unlock で囲むことで排他制御で実行するコードを定義する
-```
+### 排他制御の mutex(ミューテックス)
+チャネルは goroutine 間の通信の素晴らしい方法だった
+だが、通信が必要ない場合はどうするか。
+一度に1つの goroutine だけが変数にアクセスできるようにしたい場合はどうするか。
+つまり コンフリクトを避けたい。
+そのときは 排他制御(mutual exclusion)を使う
+排他制御のデータ構造を示す一般的な名前は mutex (ミューテックス)
+
+Goの標準ライブラリは 排他制御を`sync.Mutex`と2つのメソッド(`Lock()`, `Unlock()`)で提供する。
+`Lock()`と`Unlock()`で囲むことで排他制御で実行するコードを定義する
+```go:ex35.go
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// SafeCounter 型は排他制御ができて key の数を保持する
+type SafeCounter struct {
+	mu sync.Mutex
+	v  map[string]int
+}
+
+// Inc メソッドは指定された key のカウンタを増やす
 func (c *SafeCounter) Inc(key string) {
+	// 一度に1つの goroutine しか map にアクセスできないようにロックする
 	c.mu.Lock()
-	// Lock so only one goroutine at a time can access the map c.v.
 	c.v[key]++
 	c.mu.Unlock()
 }
-```
-mutexがUnlockされることを保証するために defer を使うこともできる
-```
+
+// Value メソッドは指定された key のカウンタ値を返す
 func (c *SafeCounter) Value(key string) int {
+	// 一度に1つの goroutine しか map にアクセスできないようにロックする
 	c.mu.Lock()
-	// Lock so only one goroutine at a time can access the map c.v.
+	// mutex が Unlock されることを保証するために defer を使うこともできる
 	defer c.mu.Unlock()
 	return c.v[key]
+}
+
+func main() {
+	c := SafeCounter{
+		v: make(map[string]int),
+	}
+	for i := 0; i < 10; i++ {
+		go c.Inc("key")
+		fmt.Println("今は", i, "番目")
+	}
+	// main とは 別の goroutine の処理によって結果が変わるため 数秒待つ
+	fmt.Println(time.Second)
+	// 出力 1s
+	time.Sleep(time.Second)
+	fmt.Println("keyの数は", c.Value("key"))
+	// 出力 keyの数は 10
 }
 ```
