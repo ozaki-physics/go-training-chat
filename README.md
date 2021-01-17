@@ -18,6 +18,7 @@ root@hoge:/go/src/github.com/ozaki-physics/go-training-chat# 自由に使う
 $ docker-compose down
 ```
 `go mod download`で依存ライブラリをダウンロードする
+なるべく推奨されている感じのディレクトリ構成にしたが GOPATH との共存がうまくいっていないからそのままでは使えない
 
 ## 使い方 Usage
 1. 公式で基本構文を学習する<br>
