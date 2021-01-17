@@ -15,3 +15,11 @@ https://golang.org/ref/spec
 https://golang.org/pkg/
 Go 言語の値レシーバとポインタレシーバ
 https://skatsuta.github.io/2015/12/29/value-receiver-pointer-receiver/
+公式の Go の処理を書いて共有できるサイトっぽい
+https://play.golang.org/
+syncパッケージのOnce, WaitGroup, Mutex
+https://qiita.com/t-mochizuki/items/80dc959b4221c53f3c40
+Go 言語の http パッケージにある Handle とか Handler とか HandleFunc とか HandlerFunc とかよくわからないままとりあえずイディオムとして使ってたのでちゃんと理解したメモ
+https://qiita.com/nirasan/items/2160be0a1d1c7ccb5e65
+【Go】net/httpパッケージを読んでhttp.HandleFuncが実行される仕組み
+https://qiita.com/imamura_sh/items/1d1c64d05f7e72e31a98
