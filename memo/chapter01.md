@@ -66,6 +66,13 @@ Go 標準パッケージに テキスト向けの`text/template`と html 向け�
 このことを 遅延初期化(lazy initialization)という。
 めったに呼ばれない処理の中で遅延初期化が使われているとエラーに気づかないという問題もある
 
+コードが複数ある場合 package 全体を build してバイナリを生成する必要がある
+`go build -o ファイル名`で build
+`./ファイル名`で実行
+ただし`_test.gp`や`_OS名.go`は build から除外される
+`go install`にすると`$GOPATH/bin`にバイナリが生成される
+__build がうまくできないので、また後日ちゃんと調べる__
+
 ### 以下は内容から逸れる話
 #### sync.Once を調べる
 sync パッケージは 排他制御の Mutex でも使った並列処理を簡単に扱うためのパッケージ
@@ -129,6 +136,22 @@ func HandleFunc(pattern string, handler func(ResponseWriter, *Request)) {
 }
 ```
 内部で`func(ResponseWriter, *Request)`から`http.HandlerFunc 型`へのキャストが行われる
+
+#### `http.FileServer()`を調べる
+`Handler 型`を返す関数 つまり`ServeHTTP()`関数だけを持ち HTTP リクエストを受けてレスポンスを返す
+引数に`FileSystem 型`を渡す
+
+#### `http.Dir()`を調べる
+`Dir 型`があある
+限定的なディレクトリツリーの中でホストOSのファイルシステムを使用して`FileSystem 型`を返す
+
+#### FileSystem を調べる
+`Opne()`インタフェースを持つ
+```go
+type FileSystem interface {
+    Open(name string) (File, error)
+}
+```
 
 #### `Template.Execute()`を調べる
 公式 https://golang.org/pkg/text/template/#Template.Execute を読む

@@ -23,3 +23,5 @@ Go 言語の http パッケージにある Handle とか Handler とか HandleFu
 https://qiita.com/nirasan/items/2160be0a1d1c7ccb5e65
 【Go】net/httpパッケージを読んでhttp.HandleFuncが実行される仕組み
 https://qiita.com/imamura_sh/items/1d1c64d05f7e72e31a98
+go build まわりのこと
+http://imagawa.hatenadiary.jp/entry/2016/12/09/190000
