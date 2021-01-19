@@ -18,12 +18,19 @@ type templateHandler struct {
 }
 
 // ServerHTTP は HTTP リクエストを処理する *templateHandler 型のレシーバを持つメソッド
+// sync.Once の値は常に同じものを使う必要があるため レシーバがポインタである必要がある
 func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 1度だけ実行する処理
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.templ.Execute(w, nil)
+	// テンプレートに はめ込むデータ(今回は nil)を適用する
+	// t.templ.Execute(w, nil)
+	// 訳者の注意書きで 戻り値をチェックすべきらしいので実装する
+	// しかし うまくエラーを起こさせる方法が分からなかった
+	if err := t.templ.Execute(w, nil); err != nil {
+		log.Fatal("テンプレートに適用するとき", err)
+	}
 }
 
 func main() {

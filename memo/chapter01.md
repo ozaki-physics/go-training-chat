@@ -61,8 +61,10 @@ Go 標準パッケージに テキスト向けの`text/template`と html 向け�
 テンプレートを使う場合はテンプレートのコンパイルが必要
 テンプレートのコンパイルとは テンプレートを解釈してデータを埋め込める状態にすること
 
-
-
+`sync.Once.Do()`を使うことで 複数の goroutine から `ServeHTTP()` メソッドを呼び出されてもコンパイルは1回しか実行しないことを保証する
+`ServeHTTP()`メソッドの中でテンプレートをコンパイルすると 必要になるまで処理を後回しにできる
+このことを 遅延初期化(lazy initialization)という。
+めったに呼ばれない処理の中で遅延初期化が使われているとエラーに気づかないという問題もある
 
 ### 以下は内容から逸れる話
 #### sync.Once を調べる
@@ -127,3 +129,18 @@ func HandleFunc(pattern string, handler func(ResponseWriter, *Request)) {
 }
 ```
 内部で`func(ResponseWriter, *Request)`から`http.HandlerFunc 型`へのキャストが行われる
+
+#### `Template.Execute()`を調べる
+公式 https://golang.org/pkg/text/template/#Template.Execute を読む
+```go
+func (t *Template) Execute(wr io.Writer, data interface{}) error
+```
+Execute は解析されたテンプレートに 指定されたデータオブジェクトを適用し 出力を wr に書き込む
+
+#### `template.Must()`を調べる
+関数呼び出しをラップして error が nil じゃないなら panic を起こすペルパー関数
+var t = template.Must(template.New("name").Parse("text"))
+
+#### `template.ParseFiles()`を調べる
+名前付きファイルからテンプレートを解析して新しいテンプレートを作成する
+引数にファイルの名前が必要
