@@ -18,6 +18,7 @@ root@hoge:/go/src/github.com/ozaki-physics/go-training-chat# 自由に使う
 $ docker-compose down
 ```
 `go mod download`で依存ライブラリをダウンロードする
+なるべく推奨されている感じのディレクトリ構成にしたが GOPATH との共存がうまくいっていないからそのままでは使えない
 
 ## 使い方 Usage
 1. 公式で基本構文を学習する<br>
@@ -41,13 +42,24 @@ ISBN:978-4-87311-752-2 C3055
 https://github.com/oreilly-japan/go-programming-blueprints
 
 ## 目次 Table of contents
-- CHAPTER 01 WebSocket を使ったチャットアプリケーション
-- CHAPTER 02 認証機能の追加
-- CHAPTER 03 プロフィール画像を追加する3つの方法
-- CHAPTER 04 ドメイン名を検索するコマンドラインツール
-- CHAPTER 05 分散システムと柔軟なデータの処理
-- CHAPTER 06 REST形式でデータや機能を公開する
-- CHAPTER 07 ランダムなおすすめを提示するWebサービス
-- CHAPTER 08 ファイルシステムのバックアップ
-- appendix A 安定した開発環境のためのベストプラクティス
-- appendix B Goらしいコードの書き方
+- <b>CHAPTER 01 WebSocket を使ったチャットアプリケーション</b>
+net/http パッケージを使った html 送信や WebSocket を使ってブラウザと接続する方法
+- <b>CHAPTER 02 認証機能の追加</b>
+OAuth 認証を利用したユーザーの識別とソーシャルログインの実装
+- <b>CHAPTER 03 プロフィール画像を追加する3つの方法</b>
+画像をユーザーがアップロード, 認証サービス, Webサービス Gravatar から取得
+- <b>CHAPTER 04 ドメイン名を検索するコマンドラインツール</b>
+標準入出力とパイプの解説
+- <b>CHAPTER 05 分散システムと柔軟なデータの処理</b>
+NSQ, MongoDB の利用
+- <b>CHAPTER 06 REST形式でデータや機能を公開する</b>
+5章の内容をJSON形式にして公開
+http.HandlerFunc の機能をラップしてパイプライン形式実装
+- <b>CHAPTER 07 ランダムなおすすめを提示するWebサービス</b>
+内部データを適切に公開する方法, Go で列挙型を実装する方法
+- <b>CHAPTER 08 ファイルシステムのバックアップ</b>
+os パッケージを使ったファイルシステムの操作, Go のインタフェースの解説
+- <b>appendix A 安定した開発環境のためのベストプラクティス</b>
+環境構築の方法など
+- <b>appendix B Goらしいコードの書き方</b>
+日本語版オリジナル記事で Go 言語のイディオムの解説
