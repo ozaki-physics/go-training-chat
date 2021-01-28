@@ -1,11 +1,11 @@
-package main
+package chat
 
 import (
 	"log"
 	"net/http"
 )
 
-func main() {
+func Main01_01() {
 	// http.HandleFunc(a, b)
 	// a は path, b は path のリクエストがきたときに実行する関数
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

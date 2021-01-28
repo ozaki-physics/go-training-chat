@@ -1,21 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"github.com/ozaki-physics/go-training-chat/pkg/training"
-	"github.com/ozaki-physics/go-training-chat/pkg/chat_app"
-	// "net/http"
+	// "fmt"
+	// これで参照できるのは src(GOPATH) からの path を書いてるから当たり前に通る
+	"github.com/ozaki-physics/go-training-chat/pkg/chat"
 )
 
 func main() {
-	fmt.Println("hello")
-	fmt.Println(training.Message)
-	fmt.Println(chat_app.Message)
-	// 動かない
-	// fmt.Println(training.message)
-	// fmt.Println(chat_app.message)
-
-
-	// http.Handle("/", http.FileServer(http.Dir("web")))
-	// http.ListenAndServe(":8080", nil)
+	// fmt.Println(chat.Const)
+	// chat.Main01_01()
+	// chat.Main01_02()
+	chat.Main01_03()
 }
