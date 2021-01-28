@@ -77,9 +77,33 @@ build がうまくできないので、また後日ちゃんと調べる
 
 go では同じパッケージ内に同じ名前の struct を type で定義することができないみたい
 
+#### チャットルームとクライアントをサーバ側でモデル化する
+オブジェクト指向のクラスを Go では 型
+インスタンスは 型の値 に相当する
+型 = クラスだと思っていたから違和感が無い笑
+また インスタンスも従来`Hello hello = new Hello()`の hello のことを指しているけど 変数という認識だったから go でインスタンスは 型の値 つまり変数という認識で違和感が無い
 
+チャットアプリの全ユーザー(クライアント)は 自動で大きな公開チャットルールに配置されるとする
+*room 型は クライアントとの接続管理やメッセージのルーティングを受け持つ
+*client 型は 1つのクライアントへの接続を表す
+
+go で WebSocket を扱うライブラリは
+golang.org/x/net/websocket
+github.com/gorilla/websocket
+があるらしい
+net/websocket のドキュメントを読みに行ったら gorilla みたいに活発に保守されているパッケージに劣る的なことが書いてあった
+また github.com/trevex/golem は軽量な Websocket フレームワーク
+gorilla には無い イベントと関数のルーティング, JSON エンコード・デコード, ルーム機能, 接続型の拡張 が実装されている
+gorilla を使うために`go get github.com/gorilla/websocket`する
+→ go.mod や go.sum に書き加えられる
 
 ### 以下は内容から逸れる話
+#### Go Modules の使い方
+go mod init パス で初期設定
+go build で勝手に go.mod に書かれたパッケージもダウンロードして build してくれる
+go mod download で go.mod や go.sum をもとに依存パッケージをダウンロードしてくれるらしい
+__build も成功するが ダウンロードした package がどこにも見当たらない__
+`$GOPATH/pkg/mod`の配下に置かれるらしい
 #### Go にインスタンスという概念はあるのか
 変数に type で宣言した struct を入れることが実質インスタンスを作っているのと同義
 クラスに属する操作(通称メソッド)は レシーバを使って struct に属させるメソッドと同じ
