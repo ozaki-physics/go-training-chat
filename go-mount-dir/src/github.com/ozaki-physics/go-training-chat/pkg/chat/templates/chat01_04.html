@@ -36,7 +36,7 @@
           alert("エラー: WebSocket に対応していないブラウザです")
         }else{
           // WebSocket 接続の開始
-          socket = new WebSocket("ws://localhost:8080/room");
+          socket = new WebSocket("ws://{{.Host}}/room");
           // onclose イベントにハンドラ設定
           socket.onclose = function(){
             alert("接続が終了しました")
