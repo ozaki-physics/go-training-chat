@@ -97,11 +97,37 @@ gorilla には無い イベントと関数のルーティング, JSON エンコ�
 gorilla を使うために`go get github.com/gorilla/websocket`する
 → go.mod や go.sum に書き加えられる
 
+クライアントのモデル化は`func (c *client) read()`や`func (c *client) write()`で実現した
+次はチャットルームのモデル化をするために クライアントがルームに参加 退室する仕組みを作る
+同時アクセスによる競合を防ぐために 2つのチャネルでそれぞれ入室と退室を受け持つ
+在室しているクライアントの保持のマップは 複数の goroutine からアクセスされても大丈夫なように チャネル経由で操作する
+具体的には select 文を使う
+select によって map への同時アクセスを防げる
+閉じたチャネルに送信すると runtime panic を起こす
+
+チャットルームを HTTP ハンドラにする
+ServeHTTP メソッドを持たせたことで *room は HTTP ハンドラとして扱えるようになった
+WebSocket を利用するためには websocket.Upgrader 型を使って HTTP 接続をアップグレードする必要がある
+websocket.Upgrader 型の値(upgrader)は再利用できるため1個生成するだけで良い
+
+HTTP リクエスト
+→ ServeHTTP メソッドの呼び出し
+→ upgrader.Upgrader メソッドの呼び出し
+→ WebSocket コネクションの取得
+
+ヘルパー関数を使って複雑さを下げる
+現状 コードを使うためには room の struct を生成してもらう必要がある
+生成を簡単にするためにヘルパー関数を使う
+
+ブラウザで jQuery を使ってクライアントの作成
+
+__なぜそこに`*`や`&`がついてるのかとか理解できていないから確認し直す__
+
 ### 以下は内容から逸れる話
 #### Go Modules の使い方
-go mod init パス で初期設定
-go build で勝手に go.mod に書かれたパッケージもダウンロードして build してくれる
-go mod download で go.mod や go.sum をもとに依存パッケージをダウンロードしてくれるらしい
+`go mod init パス`で初期設定
+`go build`で勝手に go.mod に書かれたパッケージもダウンロードして build してくれる
+`go mod download`で go.mod や go.sum をもとに依存パッケージをダウンロードしてくれるらしい
 __build も成功するが ダウンロードした package がどこにも見当たらない__
 `$GOPATH/pkg/mod`の配下に置かれるらしい
 #### Go にインスタンスという概念はあるのか

@@ -1,16 +1,34 @@
 package chat
 
 import (
-	"github.com/gorilla/websocket"
+	"log"
+	"net/http"
+	"path/filepath"
+	"sync"
+	"text/template"
 )
 
-// client はチャットを行っている一人のユーザーを表す
-type client struct {
-	// soket はこのクライアントとの通信を行う WebSocket への参照
-	socket *websocket.Conn
-	// send はメッセージが送られるバッファ付きチャネル
-	// 待ち行列のように蓄積され WebSocket を通じてユーザーのブラウザに送られるのを待機
-	send chan []byte
-	// room はこのクライアントが参加しているチャットルームの参照を保持
-	room *room
+type templateHandler01_04 struct {
+	filename string
+	once     sync.Once
+	templ    *template.Template
+}
+
+func (t *templateHandler01_04) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	t.once.Do(func() {
+		t.templ = template.Must(template.ParseFiles(filepath.Join("pkg/chat/templates", t.filename)))
+	})
+	t.templ.Execute(w, r)
+}
+
+func Main01_04() {
+	r := newRoom()
+	http.Handle("/", &templateHandler01_04{filename: "chat01_04.html"})
+	http.Handle("/room", r)
+	// バックグラウンドで動くため メインスレッドはサーバを起動していられる
+	go r.run()
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatal("ListenAndServer:", err)
+	}
+
 }
