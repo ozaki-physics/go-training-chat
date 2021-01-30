@@ -20,3 +20,8 @@ func TestNew(t *testing.T) {
 		}
 	}
 }
+
+func TestOff(t *testing) {
+	var silentTracer Tracer = Off()
+	silentTracer.Trace("データ")
+}
