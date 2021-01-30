@@ -4,6 +4,8 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	// 自作パッケージの import
+	"github.com/ozaki-physics/go-training-chat/pkg/trace"
 )
 
 type room struct {
@@ -16,6 +18,8 @@ type room struct {
 	// 在室しているクライアントの保持
 	// 複数の goroutine が同時に変更する可能性があるため チャネル経由で操作する
 	clients map[*client]bool
+	// チャットルーム上の操作ログを受け取る
+	tracer trace.Tracer
 }
 
 // ヘルパー関数を使って複雑さを下げる
@@ -36,17 +40,21 @@ func (r *room) run() {
 		case client := <-r.join:
 			// 参加
 			r.clients[client] = true
+			r.tracer.Trace("新しいクライアントが参加しました")
 		case client := <-r.leave:
 			// 退室
 			delete(r.clients, client)
+			r.tracer.Trace("クライアントが退室しました")
 			// client.send チャネルを close しているのは client の write メソッドの for ループを終了させるため
 			close(client.send)
 		case msg := <-r.forward:
+			r.tracer.Trace("メッセージを受信しました:", string(msg))
 			// すべてのクライアントにメッセージを転送
 			for client := range r.clients {
 				select {
 				case client.send <- msg:
 					// メッセージを送信
+					r.tracer.Trace("-- クライアントに送信されました")
 				default:
 					// 送信失敗のとき ルームから削除するなどの掃除をする
 					// この default はclient.send チャネルに msg が送信できなかったときに動作する
@@ -55,6 +63,7 @@ func (r *room) run() {
 					// よってこのメソッドの組み方は参考にならないかも
 					delete(r.clients, client)
 					close(client.send)
+					r.tracer.Trace("-- 送信に失敗しました クライアントをクリーンアップします")
 				}
 			}
 		}
