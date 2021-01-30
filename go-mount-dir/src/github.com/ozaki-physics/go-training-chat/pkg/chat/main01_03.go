@@ -1,4 +1,4 @@
-package main
+package chat
 
 import (
 	"log"
@@ -8,7 +8,7 @@ import (
 	"text/template"
 )
 
-type templateHandler struct {
+type templateHandler01_03 struct {
 	// ファイル名の格納
 	filename string
 	// コンパイルするために使う
@@ -17,12 +17,15 @@ type templateHandler struct {
 	templ *template.Template
 }
 
-// ServerHTTP は HTTP リクエストを処理する *templateHandler 型のレシーバを持つメソッド
+// ServerHTTP は HTTP リクエストを処理する *templateHandler01_03 型のレシーバを持つメソッド
 // sync.Once の値は常に同じものを使う必要があるため レシーバがポインタである必要がある
-func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (t *templateHandler01_03) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 1度だけ実行する処理
 	t.once.Do(func() {
-		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
+		// ディレクトリの書き方が このファイルからの path ではなく 実行している場所からの　path じゃないと動かない
+		// t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
+		// t.templ = template.Must(template.ParseFiles(filepath.Join("web", t.filename)))
+		t.templ = template.Must(template.ParseFiles(filepath.Join("pkg/chat/templates", t.filename)))
 	})
 	// テンプレートに はめ込むデータ(今回は nil)を適用する
 	// t.templ.Execute(w, nil)
@@ -33,10 +36,10 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func main() {
+func Main01_03() {
 	// 第2引数には Handler 型じゃなくても ServeHTTP() メソッドを持っている struct なら良い
 	// ここで URL に対応する http.Handler を DefaultServeMux に登録
-	http.Handle("/", &templateHandler{filename: "chat.html"})
+	http.Handle("/", &templateHandler01_03{filename: "chat.html"})
 	// Web サーバを開始
 	// ListenAndServe() の第2引数が nil なら DefaultServeMux が Handler として指定される
 	if err := http.ListenAndServe(":8080", nil); err != nil {

@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>チャット</title>
+    <style>
+      input { display: block;}
+      ul {list-style: none;}
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    WebSocket を使ったチャットアプリケーション
+    <form id="chatbox">
+      <textarea></textarea>
+      <input type="submit" value="送信">
+    </form>
+    <!-- WebSocket用のJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+      $(function(){
+        let socket = null;
+        let msgBox = $("#chatbox textarea");
+        let messages = $("#messages");
+        // 送信ボタンの処理
+        $("#chatbox").submit(function(){
+          if(!msgBox.val()) return false;
+          if(!socket){
+            alert("エラー: WebSocket 接続が行われていません");
+            return false;
+          }
+          // socket.send によってメッセージがサーバに送信される
+          socket.send(msgBox.val());
+          msgBox.val("");
+          return false;
+        });
+        if(!window["WebSocket"]){
+          alert("エラー: WebSocket に対応していないブラウザです")
+        }else{
+          // WebSocket 接続の開始
+          socket = new WebSocket("ws://{{.Host}}/room");
+          // onclose イベントにハンドラ設定
+          socket.onclose = function(){
+            alert("接続が終了しました")
+          }
+          // onmessage イベントにハンドラ設定
+          // WebSocket がメッセージを受信すると jQuery で箇条書きの追加
+          socket.onmessage = function(e){
+            messages.append($("<li>").text(e.data))
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

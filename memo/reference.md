@@ -25,3 +25,12 @@ https://qiita.com/nirasan/items/2160be0a1d1c7ccb5e65
 https://qiita.com/imamura_sh/items/1d1c64d05f7e72e31a98
 go build まわりのこと
 http://imagawa.hatenadiary.jp/entry/2016/12/09/190000
+
+https://qiita.com/yokoto/items/13be66b6276e17d9f554
+https://qiita.com/momotaro98/items/23fa4356389a7e610acc
+https://qiita.com/ogady/items/0cedd3599c4dc13e9a95
+https://qiita.com/lp-peg/items/9f7da97d9f7292f16fbc
+http://imagawa.hatenadiary.jp/entry/2016/12/09/190000
+https://scrapbox.io/watarukura/go_modulesでローカルimportする
+https://qiita.com/spiegel-im-spiegel/items/2da5e5902aa2cb6d9e30
+https://qiita.com/nirasan/items/330a0e23f3877bce0051
