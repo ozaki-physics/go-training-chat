@@ -4,9 +4,12 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 	"text/template"
+	// 自作パッケージの import
+	"github.com/ozaki-physics/go-training-chat/pkg/trace"
 )
 
 type templateHandler01_04 struct {
@@ -29,6 +32,9 @@ func Main01_04() {
 	// フラグを解釈する コマンドラインで指定された文字列から情報を取り出して *addr に入れる
 	flag.Parse()
 	r := newRoom()
+	// tracer パッケージを使うために room struct のフィールドを nil じゃなくするため
+	// ターミナルに出力されるために os.Stdout を使う
+	r.tracer = trace.New(os.Stdout)
 	http.Handle("/", &templateHandler01_04{filename: "chat01_04.html"})
 	http.Handle("/room", r)
 	// バックグラウンドで動くため メインスレッドはサーバを起動していられる
