@@ -34,3 +34,8 @@ http://imagawa.hatenadiary.jp/entry/2016/12/09/190000
 https://scrapbox.io/watarukura/go_modulesでローカルimportする
 https://qiita.com/spiegel-im-spiegel/items/2da5e5902aa2cb6d9e30
 https://qiita.com/nirasan/items/330a0e23f3877bce0051
+
+Go を使ったテストの書き方が書かれている
+https://inside.dmm.com/entry/2019/03/28/review-go-test
+公式のテストの書き方
+https://blog.golang.org/subtests

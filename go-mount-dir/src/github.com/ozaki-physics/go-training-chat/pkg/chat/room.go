@@ -19,7 +19,8 @@ type room struct {
 	// 複数の goroutine が同時に変更する可能性があるため チャネル経由で操作する
 	clients map[*client]bool
 	// チャットルーム上の操作ログを受け取る
-	tracer trace.Off(),
+	tracer trace.Tracer
+	// tracer trace.Off(),
 }
 
 // ヘルパー関数を使って複雑さを下げる
