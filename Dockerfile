@@ -1,10 +1,8 @@
 FROM golang:1.15
 
 ARG REPOSITORY
-
-# go mod を使うために GOPATH を削除するために path を上書き
-ENV GOPATH=""
+ENV GOPATH="/go"
 WORKDIR /go/src/$REPOSITORY
-RUN go mod init $REPOSITORY
-
+COPY ./go.mod .
+RUN go mod download
 CMD ["bash"]
