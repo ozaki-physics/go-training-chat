@@ -13,3 +13,11 @@
 
 ### 内容
 認証のミドルウェア(`ServeHTTP()` を持った struct)を作って 経由させる感じ  
+認証の Cookie が存在しなければ リダイレクトさせる  
+パスを split して swith したら 必ず パラメータが存在する(`/auth/{action}/{provider}`)前提になっていることに注意  
+ちゃんとエラーハンドリングしないと 異常終了する  
+
+### 気になること
+Cookie が存在しないかの定数に `http.ErrNoCookie` がある?  
+リダイレクトに `http.StatusTemporaryRedirect` がある?  
+ステータスコード404専用の `http.StatusNotFound` 定数がある?  
