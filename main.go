@@ -11,7 +11,8 @@ func main() {
 	// chat.Main01_01()
 	// chat.Main01_02()
 	// chat.Main01_03()
-	chat.Main01_04()
+	// chat.Main01_04()
+	chat.Main02()
 }
 
 // chat.Main01_04() を動かすときは go-training-chat で go run main.go で動く
